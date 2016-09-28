@@ -1,0 +1,26 @@
+{
+  "name": "linter-clcc",
+  "main": "./lib/linter-clcc",
+  "version": "0.0.0",
+  "description": "Linter plugin for OpenCl, using clcc.",
+  "keywords": [
+  ],
+  "activationCommands": {
+    "atom-workspace": "linter-clcc:toggle"
+  },
+  "repository": "https://github.com/atom/linter-clcc",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {
+    "linter": "^3.2.0"
+  },
+  "providedServices": {
+    "linter": {
+      "versions": {
+        "1.0.0": "provideLinter"
+      }
+    }
+  }
+}
