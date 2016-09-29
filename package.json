@@ -5,16 +5,15 @@
   "description": "Linter plugin for OpenCl, using clcc.",
   "keywords": [
   ],
-  "activationCommands": {
-    "atom-workspace": "linter-clcc:toggle"
-  },
+  "activationCommands": [],
   "repository": "https://github.com/atom/linter-clcc",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
-    "linter": "^3.2.0"
+    "atom-package-deps": "^4.3.1",
+    "atom-linter": "^4.3.4"
   },
   "providedServices": {
     "linter": {

@@ -1,51 +1,38 @@
 {CompositeDisposable} = require 'atom'
-helpers = require 'linter'
+helpers = require 'atom-linter'
 
 'use babel'
 module.exports = {
   config:
-    execPath:
+    clccPath:
       type: 'string'
-      default: "/usr/bin/clcc"
-      description: "Note for Windows/Mac OS X users: please ensure that CLCC is in your ```$PATH``` otherwise the linter might not work. If your path contains spaces, it needs to be enclosed in double quotes."
+      default: '/usr/bin/clcc'
+      description: 'Note for Windows/Mac OS X users: please ensure that CLCC is in your ```$PATH``` otherwise the linter might not work. If your path contains spaces, it needs to be enclosed in double quotes.'
 
   activate: ->
-    console.log('My package was activated')
-
+    require('atom-package-deps').install('linter-clcc')
+      .then ->
+        console.log('linter-clcc loaded')
   deactivate: ->
     console.log('My package was deactivated')
 
   provideLinter: ->
     provider =
       name: 'clcc'
-      grammarScopes: ['source.cl']
+      grammarScopes: ['source.opencl']
       scope: 'file'
       lintOnFly: false,
       lint: (textEditor) =>
         return @linting textEditor.getPath()
+          .then @parsing
 
   linting: (filePath) ->
-    spawn  = require('child_process').spawn;
-    args   = ['-a', filePath]
-    child  = spawn('/usr/bin/clcc', args)
-    output   = ''
-
-
-    return helpers.exec('/usr/bin/clcc', args, options: {stream: 'stderr'}).then (output) ->
-      console.log output
-      result = []
-      result.push(
-        type: 'Error',
-        text: 'Text',
-        range:[[1,0], [1,1]],
-        filePath: filePath
-      )
-      return result
+    clccPath = atom.config.get('linter-clcc.clccPath')
+    return helpers.exec('optirun', [clccPath, filePath], {stream: 'stderr'})
 
   parsing: (output, filePath) ->
     result = []
-    out    = ''
-
+    console.log(output)
     result.push(
       type: 'Error',
       text: 'Text',
