@@ -13,9 +13,12 @@ module.exports = {
       description: 'Note for Windows/Mac OS X users: please ensure that CLCC is in your ```$PATH``` otherwise the linter might not work. If your path contains spaces, it needs to be enclosed in double quotes.'
 
   activate: ->
-        console.log('linter-clcc loaded')
+    @subscriptions = new CompositeDisposable
+    @subscriptions.add atom.config.observe 'linter-clcc.clccPath',
+      (clccPath) =>
+        @clccPath = clccPath
   deactivate: ->
-    console.log('My package was deactivated')
+    @subscriptions.dispose()
 
   provideLinter: ->
     provider =
@@ -24,30 +27,25 @@ module.exports = {
       scope: 'project'
       lintOnFly: true,
       lint: (textEditor) =>
-        return @linting textEditor.getPath()
-          .then @parsing
+        filePath = textEditor.getPath()
+        return helpers.exec('optirun', [@clccPath, filePath], {stream: 'stderr'})
+          .then (output) ->
+            lines   = output.split('\n')
+            result  = []
+            regex   = /<kernel>:(\d+):(\d+): (.+): (.*)/
+            for line in lines
+              match = line.match(regex)
+              if match
+                row     = match[1] - 1
+                col     = match[2] - 1
+                type    = match[3]
+                message = match[4]
+                result.push(
+                  type: type
+                  text: message
+                  range:    [[row,col], [row,col]]
+                  filePath: filePath
+                )
+            return result
     return provider
-
-  linting: (filePath) ->
-    clccPath = atom.config.get('linter-clcc.clccPath')
-    return helpers.exec('optirun', [clccPath, filePath], {stream: 'stderr'})
-
-  parsing: (output, filePath) ->
-    Regex = new RegExp('<kernel>:[0-9]+:[0-9]+: [a-z]+: .+', 'g')
-    Position = new RegExp('[0-9]+:[0-9]+')
-    matches = output.match(Regex)
-    for match in matches
-      position = match.match(Position)
-      row      = match.match(new RegExp('[0-9]+(?=:[0-9]+)'))
-      col      = match.match(new RegExp('(?<=[0-9]+:)[0-9]+'))
-      console.log(row)
-      result = []
-      result.push(
-        type: 'Error',
-        text: 'Text',
-        range:[[0,0], [0,1]],
-        filePath: filePath
-      )
-
-    return result
 }
