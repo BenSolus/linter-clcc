@@ -1,4 +1,4 @@
-# linter-clcc package
+# linter-opencl package
 
 A short description of your package.
 
