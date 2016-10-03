@@ -17,12 +17,13 @@ addons:
     - libgnome-keyring-dev
     - fakeroot
     - python3
-    - python3-pyopencl
     - ocl-icd-opencl-dev
 
 before_install:
     - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty multiverse"
     - sudo apt-get -qq update
+
+
 env:
   global:
     - APM_TEST_PACKAGES="linter language-opencl"
@@ -31,5 +32,5 @@ env:
     - ATOM_CHANNEL=stable
 
 before_script:
-    - python -c 'import sys;print(sys.path)'
-    - python3 /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py -p
+    - pip install pyopencl
+    - python /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py -p
