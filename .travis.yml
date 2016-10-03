@@ -5,10 +5,19 @@ notifications:
 
 script: 'curl -s https://raw.githubusercontent.com/atom/ci/master/build-package.sh | sh'
 
-sudo: true
-
+sudo: required
+dist: trusty
 os:
   - linux
+addons:
+  apt:
+    packages:
+    - build-essential
+    - git
+    - libgnome-keyring-dev
+    - fakeroot
+    - python-pyopencl
+    - ocl-icd-opencl-dev
 
 before_install:
     - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty multiverse"
@@ -20,15 +29,5 @@ env:
   matrix:
     - ATOM_CHANNEL=stable
 
-install:
-    - "sudo bash -c 'echo \"deb http://mirrors.kernel.org/ubuntu trusty main universe\" >> /etc/apt/sources.list'"
-    - "sudo apt-get install -y ocl-icd-opencl-dev"
-    - "python /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py -p"
-addons:
-  apt:
-    packages:
-    - build-essential
-    - git
-    - libgnome-keyring-dev
-    - fakeroot
-    - python-pyopencl
+before_script:
+    - python /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py -p
