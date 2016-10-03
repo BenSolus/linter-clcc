@@ -24,8 +24,9 @@ before_install:
     - export CMAKE_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64;
     - chmod +x ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
     - ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
-    - sudo ldconfig ${AMDAPPSDKROOT}/lib/x86_64
-    - ldconfig -v
+    - sudo echo ${AMDAPPSDKROOT}/lib/x86_64 > /etc/ld.so.conf
+    - sudo ldconfig
+    - ldconfig -p
 
 env:
   global:
