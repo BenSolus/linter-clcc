@@ -11,12 +11,11 @@ os:
   - linux
 
 before_install:
-    - apm install language-opencl
     - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty multiverse"
     - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty-updates multiverse"
 env:
   global:
-    - APM_TEST_PACKAGES=""
+    - APM_TEST_PACKAGES="language-opencl"
 
   matrix:
     - ATOM_CHANNEL=stable
