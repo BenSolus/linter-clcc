@@ -2,7 +2,7 @@
 
 describe 'The OpenCL build provider for Atom Linter',  ->
   linter = require('../lib/linter-opencl').provideLinter().lint
-  dirPath = '~/build/BenSolus/linter-opencl/spec//files'
+  dirPath = '~/build/BenSolus/linter-opencl/spec/files'
 
   beforeEach ->
     waitsForPromise ->
