@@ -31,4 +31,5 @@ env:
     - ATOM_CHANNEL=stable
 
 before_script:
+    - python -c 'import sys;print(sys.path)'
     - python3 /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py -p
