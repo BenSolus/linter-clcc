@@ -1,17 +1,27 @@
 {CompositeDisposable} = require 'atom'
 helpers = require 'atom-linter'
 
-xcache = new Map
-
 'use babel'
 module.exports = {
   config:
     pythonPath:
       type: 'string'
       default: '/usr/bin/python'
+      order: 1
       description: 'Note for Windows/Mac OS X users: please ensure that python is in your ```$PATH``` otherwise the linter might not work. If your path contains spaces, it needs to be enclosed in double quotes.'
-    hybridGraphics:
+    openCL:
+      title: 'OpenCL'
       type: 'object'
+      order: 2
+      properties:
+        platformIndex:
+          title: 'OpenCL Platform Index'
+          type: 'integer'
+          default: 0
+    hybridGraphics:
+      title: 'Hybrid Graphics (Linux only)'
+      type: 'object'
+      order: 3
       properties:
         enable:
           type: 'boolean'
@@ -19,7 +29,12 @@ module.exports = {
         offloadingPath:
           type: 'string'
           default: '/usr/bin/optirun'
-          description: 'Note for Windows/Mac OS X users: please ensure that the offloader is in your ```$PATH``` otherwise the linter might not work. If your path contains spaces, it needs to be enclosed in double quotes.'
+          description: 'If the offloader is in your ```$PATH```, full path to the binary is not necessary. If your path contains spaces, it needs to be enclosed in double quotes.'
+    debug:
+      type: 'boolean'
+      default: 'false'
+      order: 4
+      description: 'Prints command executed to compile OpenCL source to atoms console. Go to View->Developer->Toggle Developer Tools. Observe the Console tab when you open/save a OpenCL file.'
 
   activate: ->
     @subscriptions = new CompositeDisposable
@@ -29,17 +44,26 @@ module.exports = {
     @subscriptions.add atom.config.observe 'linter-opencl.hybridGraphics',
       (hybridGraphics) =>
         @hybridGraphics = hybridGraphics
+    @subscriptions.add atom.config.observe 'linter-opencl.openCL',
+      (openCL) =>
+        @openCL = openCL
+    @subscriptions.add atom.config.observe 'linter-opencl.debug',
+      (debug) =>
+        @debug = debug
+
   deactivate: ->
     @subscriptions.dispose()
 
   provideLinter: ->
     provider =
       grammarScopes: ['source.opencl']
-      scope: 'project'
+      scope: 'file'
       lintOnFly: false,
       lint: (textEditor) =>
         filePath = textEditor.getPath()
         args     = []
+        file = __dirname + '/files/error.cl'
+        console.log(file)
         if @hybridGraphics.enable
           executable = @hybridGraphics.offloadingPath
           args.push(@pythonPath)
@@ -47,9 +71,18 @@ module.exports = {
         else
           executable = @pythonPath
           args.push(__dirname + '/clCompiler.py')
+        args.push(@openCL.platformIndex)
         args.push(filePath)
-        return helpers.exec(executable, args, {stream: 'stderr'})
+        if @debug
+          command = executable
+          for a in args
+            command = command + ' ' + a
+          console.log(command)
+        return new Promise (resolve, reject) =>
+          helpers.exec(executable, args, {stream: 'stderr'})
           .then (output) ->
+            if @debug
+              console.log('Hello')
             lines   = output.split('\n')
             result  = []
             regex   = /<kernel>:(\d+):(\d+): ([^ ]+): (.*)/
@@ -66,6 +99,5 @@ module.exports = {
                   range:    [[row,col], [row,col]]
                   filePath: filePath
                 )
-            return result
-    return provider
+            resolve result
 }
