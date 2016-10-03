@@ -15,7 +15,7 @@ before_install:
     - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty-updates multiverse"
 env:
   global:
-    - APM_TEST_PACKAGES="language-opencl"
+    - APM_TEST_PACKAGES="linter language-opencl"
 
   matrix:
     - ATOM_CHANNEL=stable
