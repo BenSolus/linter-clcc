@@ -24,7 +24,8 @@ before_install:
     - export CMAKE_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64;
     - chmod +x ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
     - ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
-    - sudo ln -s ${AMDAPPSDKROOT}/lib/x86_64/libOpenCL.so.1 /usr/lib
+    - ldconfig ${AMDAPPSDKROOT}/lib/x86_64
+    - ldconfig -v
 
 env:
   global:
