@@ -25,7 +25,8 @@ before_install:
     - chmod +x ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
     - ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
     - sudo ldconfig ${AMDAPPSDKROOT}/lib/x86_64
-    - sudo ldconfig -v
+    - sudo ldconfig
+    - ldconfig -v
 
 
 env:
