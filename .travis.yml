@@ -25,7 +25,7 @@ before_install:
     - export CMAKE_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64;
     - sudo chmod +x ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
     - ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
-    - sudo >&2 ldconfig -v
+    - sudo ln -s ${AMDAPPSDKROOT}/lib/x86_64/libOpenCL.so.1 opt/python/2.7.10/lib/libOpenCL.so
 
 
 env:
