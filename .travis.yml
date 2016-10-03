@@ -29,5 +29,5 @@ addons:
     - git
     - libgnome-keyring-dev
     - fakeroot
-    - ocl-icd-opencl-dev
+    - ocl-icd-libopencl1
     - python-pyopencl
