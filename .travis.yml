@@ -7,9 +7,9 @@ script: 'curl -s https://raw.githubusercontent.com/atom/ci/master/build-package.
 
 sudo: false
 
-os:
-  - linux
-
+os: linux
+  before_install:
+    -apm install language-opencl
 env:
   global:
     - APM_TEST_PACKAGES=""
@@ -25,3 +25,4 @@ addons:
     - libgnome-keyring-dev
     - fakeroot
     - opencl-headers
+    - python-pyopencl
