@@ -5,13 +5,15 @@ notifications:
 
 script: 'curl -s https://raw.githubusercontent.com/atom/ci/master/build-package.sh | sh'
 
-sudo: false
+sudo: true
 
 os:
   - linux
 
 before_install:
-    -apm install language-opencl
+    - apm install language-opencl
+    - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty multiverse"
+    - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty-updates multiverse"
 env:
   global:
     - APM_TEST_PACKAGES=""
