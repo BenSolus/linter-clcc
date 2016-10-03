@@ -12,7 +12,7 @@ os:
 
 before_install:
     - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty multiverse"
-    - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty-updates multiverse"
+    - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu trusty universe"
     - sudo apt-get -qq update
     - python /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py -p
 env:
