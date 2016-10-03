@@ -16,7 +16,7 @@ addons:
     - git
     - libgnome-keyring-dev
     - fakeroot
-    - python-pyopencl
+    - python3-pyopencl
     - ocl-icd-opencl-dev
 
 before_install:
