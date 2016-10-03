@@ -1,0 +1,27 @@
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+
+script: 'curl -s https://raw.githubusercontent.com/atom/ci/master/build-package.sh | sh'
+
+sudo: false
+
+os:
+  - linux
+
+env:
+  global:
+    - APM_TEST_PACKAGES=""
+
+  matrix:
+    - ATOM_CHANNEL=stable
+
+addons:
+  apt:
+    packages:
+    - build-essential
+    - git
+    - libgnome-keyring-dev
+    - fakeroot
+    - opencl-headers
