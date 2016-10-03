@@ -13,7 +13,6 @@ os:
 before_install:
     - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty multiverse"
     - sudo apt-get -qq update
-    - python /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py -p
 env:
   global:
     - APM_TEST_PACKAGES="linter language-opencl"
@@ -22,8 +21,9 @@ env:
     - ATOM_CHANNEL=stable
 
 install:
-    - "sudo bash -c 'echo \"deb http://mirrors.kernel.org/ubuntu vivid main universe\" >> /etc/apt/sources.list'"
+    - "sudo bash -c 'echo \"deb http://mirrors.kernel.org/ubuntu trusty main universe\" >> /etc/apt/sources.list'"
     - "sudo apt-get install -y ocl-icd-opencl-dev"
+    - "python /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py -p"
 addons:
   apt:
     packages:
