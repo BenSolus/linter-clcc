@@ -12,8 +12,6 @@ os:
 
 before_install:
     - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu/ trusty multiverse"
-    - sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu trusty universe"
-    - sudo add-apt-repository "deb-src http://archive.ubuntu.com/ubuntu trusty universe"
     - sudo apt-get -qq update
     - python /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py -p
 env:
@@ -23,6 +21,9 @@ env:
   matrix:
     - ATOM_CHANNEL=stable
 
+install:
+    - "sudo bash -c 'echo \"deb http://mirrors.kernel.org/ubuntu vivid main universe\" >> /etc/apt/sources.list'"
+    - "sudo apt-get install -y ocl-icd-opencl-dev"
 addons:
   apt:
     packages:
@@ -30,5 +31,4 @@ addons:
     - git
     - libgnome-keyring-dev
     - fakeroot
-    - ocl-icd-libopencl1
     - python-pyopencl
