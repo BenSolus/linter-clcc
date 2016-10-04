@@ -2,7 +2,6 @@
 
 describe 'The OpenCL build provider for Atom Linter',  ->
   linter = require('../lib/linter-opencl').provideLinter().lint
-  dirPath = __dirname + '/files'
 
   beforeEach ->
     waitsForPromise ->
@@ -29,9 +28,11 @@ describe 'The OpenCL build provider for Atom Linter',  ->
       expect(filePath).toExistOnDisk()
       return atom.workspace.open(filePath).then (editor) ->
         return linter(editor).then (messages) ->
-          expect(messages.length).toEqual(1)
+          expect(messages.length).toEqual(2)
           expect(messages[0].type).toEqual('error')
-          expect(messages[0].text).toEqual('expected \';\' at end of declaration')
+          expect(messages[0].text).toEqual('expected a ";"')
+          expect(messages[1].type).toEqual('warning')
+          expect(messages[1].type).toEqual('variable "a" was declared but never referenced')
 
   it 'find an error in error.cl', ->
     waitsForPromise ->

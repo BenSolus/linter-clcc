@@ -86,6 +86,7 @@ module.exports = {
           command   = executable
           for a in args
             command = command + ' ' + a
+          console.log(command)
         return new Promise (resolve, reject) =>
           helpers.exec(executable, args, {stream: 'stderr'})
           .then (output) ->

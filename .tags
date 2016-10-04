@@ -1,0 +1,4 @@
+activate	/home/bennet/Projects/linter-opencl/lib/linter-opencl.coffee	/^  activate: ->$/;"	function	line:44
+deactivate	/home/bennet/Projects/linter-opencl/lib/linter-opencl.coffee	/^  deactivate: ->$/;"	function	line:63
+provideLinter	/home/bennet/Projects/linter-opencl/lib/linter-opencl.coffee	/^  provideLinter: ->$/;"	function	line:66
+lint	/home/bennet/Projects/linter-opencl/lib/linter-opencl.coffee	/^      lint: (textEditor) =>$/;"	function	line:71
