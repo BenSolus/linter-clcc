@@ -4,9 +4,18 @@
   "version": "0.0.0",
   "description": "Linter plugin for OpenCl.",
   "keywords": [
+    "lint",
+    "linter",
+    "opencl"
   ],
   "activationCommands": [],
-  "repository": "https://github.com/atom/linter-opencl",
+  "repository": {
+    "type": "git",
+    "url":  "https://github.com/BenSolus/linter-opencl"
+  },
+  "bugs": {
+    "url": "https://github.com/BenSolus/linter-opencl/issues"
+  },
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
