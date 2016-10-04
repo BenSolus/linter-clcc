@@ -35,4 +35,3 @@ env:
 
 before_script:
     - pip install pyopencl
-    - lspci | grep VGA
