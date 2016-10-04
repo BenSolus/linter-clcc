@@ -32,7 +32,7 @@ describe 'The OpenCL build provider for Atom Linter',  ->
           expect(messages[0].type).toEqual('error')
           expect(messages[0].text).toEqual('expected a ";"')
           expect(messages[1].type).toEqual('warning')
-          expect(messages[1].type).toEqual('variable "a" was declared but never referenced')
+          expect(messages[2].text).toEqual('variable "a" was declared but never referenced')
 
   it 'find an error in error.cl', ->
     waitsForPromise ->
