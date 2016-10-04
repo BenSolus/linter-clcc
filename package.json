@@ -1,7 +1,7 @@
 {
   "name": "linter-opencl",
   "main": "./lib/linter-opencl",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Linter plugin for OpenCl.",
   "keywords": [
     "lint",
@@ -11,7 +11,7 @@
   "activationCommands": [],
   "repository": {
     "type": "git",
-    "url":  "https://github.com/BenSolus/linter-opencl"
+    "url": "https://github.com/BenSolus/linter-opencl"
   },
   "bugs": {
     "url": "https://github.com/BenSolus/linter-opencl/issues"
