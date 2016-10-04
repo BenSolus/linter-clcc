@@ -36,4 +36,4 @@ env:
 
 before_script:
     - pip install pyopencl
-    - python /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py 0 /home/travis/build/BenSolus/linter-opencl/lib/spec/error.cl
+    - python /home/travis/build/BenSolus/linter-opencl/lib/clCompiler.py 0 /home/travis/build/BenSolus/linter-opencl/spec/error.cl
