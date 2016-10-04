@@ -62,8 +62,6 @@ module.exports = {
       lint: (textEditor) =>
         filePath = textEditor.getPath()
         args     = []
-        file = __dirname + '/files/error.cl'
-        console.log(file)
         if @hybridGraphics.enable
           executable = @hybridGraphics.offloadingPath
           args.push(@pythonPath)
@@ -81,8 +79,7 @@ module.exports = {
         return new Promise (resolve, reject) =>
           helpers.exec(executable, args, {stream: 'stderr'})
           .then (output) ->
-            if @debug
-              console.log('Hello')
+            console.log('output')
             lines   = output.split('\n')
             result  = []
             regex   = /<kernel>:(\d+):(\d+): ([^ ]+): (.*)/
