@@ -71,6 +71,8 @@ module.exports = {
       lint: (textEditor) =>
         filePath = textEditor.getPath()
         args     = []
+        debug    = @debug
+        vendor   = @vendor
         if @hybridGraphics.enable
           executable = @hybridGraphics.offloadingPath
           args.push(@pythonPath)
@@ -80,30 +82,26 @@ module.exports = {
           args.push(__dirname + '/clCompiler.py')
         args.push(@openCL.platformIndex)
         args.push(filePath)
-        if @debug
+        if debug
           command   = executable
           for a in args
             command = command + ' ' + a
-          console.log(@vendor)
-          if @vendor == 'AMD'
-            console.log(TEST)
         return new Promise (resolve, reject) =>
           helpers.exec(executable, args, {stream: 'stderr'})
           .then (output) ->
-            console.log(output)
+            if debug
+              console.log(output)
             lines         = output.split('\n')
             result        = []
-            if @vendor == 'AMD'
+            if vendor.localeCompare('AMD') == 0
               regex       = /[^,]* line (\d+): ([^ ]): (.*)/
             else
               regex       = /[^:]:(\d+):(\d+): ([^ ]+): (.*)/
-            console.log(regex)
             for line in lines
               match       = line.match(regex)
               if match
-                console.log(line)
                 row       = match[1] - 1
-                if @vendor == 'AMD'
+                if vendor.localeCompare('AMD') == 0
                   col     = 0
                   type    = match[2]
                   message = match[3]
