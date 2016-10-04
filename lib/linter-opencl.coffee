@@ -94,7 +94,7 @@ module.exports = {
             lines         = output.split('\n')
             result        = []
             if vendor.localeCompare('AMD') == 0
-              regex       = /[^,]* line (\d+): ([^ ]): (.*)/
+              regex       = /[^,], line (\d+): ([^:]+): (.*)/
             else
               regex       = /[^:]:(\d+):(\d+): ([^ ]+): (.*)/
             for line in lines
