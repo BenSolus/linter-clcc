@@ -26,7 +26,6 @@ before_install:
     - ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
     - export LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64:${LIBRARY_PATH};
 
-
 env:
   global:
     - APM_TEST_PACKAGES="linter language-opencl"
@@ -36,3 +35,4 @@ env:
 
 before_script:
     - pip install pyopencl
+    - lspci | grep VGA
