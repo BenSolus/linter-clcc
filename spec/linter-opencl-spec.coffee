@@ -13,6 +13,7 @@ describe 'The OpenCL build provider for Atom Linter',  ->
       atom.config.set('linter-opencl.debug', false)
       atom.packages.activatePackage('language-opencl')
       atom.packages.activatePackage('linter-opencl')
+      console.log(atom.packages.resolvePackagePath('linter-opencl'))
       return atom.packages.activatePackage("linter-opencl")
 
   it 'should be in the packages list', ->
@@ -23,7 +24,7 @@ describe 'The OpenCL build provider for Atom Linter',  ->
 
   it 'find an error in error.cl', ->
     waitsForPromise ->
-      filePath = dirPath + '/error.cl'
+      filePath = '/home/travis/build/BenSolus/linter-opencl/spec/files/error.cl'
       expect(filePath).toExistOnDisk()
       return atom.workspace.open(filePath).then (editor) ->
         return linter(editor).then (messages) ->
@@ -33,7 +34,7 @@ describe 'The OpenCL build provider for Atom Linter',  ->
 
   it 'find an error in error.cl', ->
     waitsForPromise ->
-      filePath = dirPath + '/correct.cl'
+      filePath = '/home/travis/build/BenSolus/linter-opencl/spec/files/correct.cl'
       expect(filePath).toExistOnDisk()
       return atom.workspace.open(filePath).then (editor) ->
         return linter(editor).then (messages) ->
