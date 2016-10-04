@@ -79,7 +79,7 @@ module.exports = {
         return new Promise (resolve, reject) =>
           helpers.exec(executable, args, {stream: 'stderr'})
           .then (output) ->
-            console.log('output')
+            console.log(output)
             lines   = output.split('\n')
             result  = []
             regex   = /<kernel>:(\d+):(\d+): ([^ ]+): (.*)/
