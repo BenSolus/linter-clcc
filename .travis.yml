@@ -12,7 +12,7 @@ os:
 
 before_install:
     - sudo apt-get update -qq
-    - sudo apt-get install -qq opencl-headers
+    - sudo apt-get install -qq opencl-headers python3
     - bash .travis/amd_sdk.sh;
     - tar -xjf AMD-SDK.tar.bz2;
     - AMDAPPSDKROOT=${HOME}/AMDAPPSDK;

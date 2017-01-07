@@ -52,4 +52,7 @@ if __name__ == "__main__":
     )
     f = open(sys.argv[1], 'r')
     fstr = "".join(f.readlines())
-    program = cl.Program(ctx, fstr).build(options=[flags])
+    if(flags != ''):
+        program = cl.Program(ctx, fstr).build(options=[flags.replace('\'', '')])
+    else:
+        program = cl.Program(ctx, fstr).build()

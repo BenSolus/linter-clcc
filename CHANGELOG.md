@@ -5,3 +5,6 @@
     + Windows 10 Pro N 64-bit (1511 / Build 10583.589)
   * NVIDIA GeForce GTX 760 (on Intel Core 2 Quad CPU Q8200 without integrated GPU)
     * Antergos Linux 64-bit (Kernel 4.7.5-1)
+
+## 0.2.0
+* Adding global support for compiler flags
