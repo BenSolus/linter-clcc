@@ -1,5 +1,7 @@
 {CompositeDisposable} = require 'atom'
 helpers = require 'atom-linter'
+path = require 'path'
+fs = require 'fs'
 
 'use babel'
 module.exports = {
@@ -77,47 +79,116 @@ module.exports = {
   deactivate: ->
     @subscriptions.dispose()
 
+  # Get compiler flags either from an '.opencl-flags.json' file or from global
+  # settings
+  getFlags: ->
+    filePath = path.dirname(atom.workspace.getActiveTextEditor().getPath())
+    config   = ''
+
+    if atom.project.getPaths()[0] != undefined
+      fileName      = '.opencl-flags.json' # File name searched for
+      maxIterations = 32                   # Maximum number of folders checked
+      currentPath   = filePath             # Current folder to check
+      currentFile   = filePath + '/' + fileName  # Current full path to check
+
+      # Check if the uppest directory contains an '.opencl-flags.json' file
+      if fs.existsSync(currentFile)
+        config = currentFile
+
+      # Check next folders if not found already
+      if config == ''
+        projectPath  = atom.project.getPaths()[0] # Lowest path to check
+        counter      = 0                          # Number of folders checked
+
+        while path.relative(currentPath, projectPath) != '' && \
+              counter < maxIterations
+          # Check next folder
+          currentPath = path.join(currentPath, '..')
+          currentFile = path.join(currentPath, fileName)
+          if fs.existsSync(currentFile)
+            config = currentFile
+            break
+          ++counter
+
+      if config != ''
+        delete require.cache[config]
+
+        configData = require(config) # Containing flags and include informations
+        flags      = ''              # Will contain all flags
+
+        if configData.flags != undefined
+          # Add default flags
+          flags += configData.flags
+
+        if configData.includes != undefined
+          for include in configData.includes
+            # Expand paths if necessary
+            if include.substring(0, 1) == '.'
+              include = path.join(filePath, include)
+            # Add include paths
+            flags += ' -I \"' + include + '\"'
+
+        # Return flags from an '.opencl-flags.json' file
+        return flags
+
+    # Return flags from global settings
+    return atom.config.get('linter-opencl.compilerFlags')
+
   provideLinter: ->
     provider =
       grammarScopes: ['source.opencl']
       scope: 'file'
-      lintOnFly: false,
+      lintOnFly: true,
       lint: (textEditor) =>
-        filePath = textEditor.getPath()
-        args     = []
-        debug    = @debug
-        vendor   = @vendor
+        filePath = textEditor.getPath() # Path to viewed file
+        args     = []                   # Arguments given to linter
+        debug    = @debug               # Wether debug log should pe printed
+        vendor   = @vendor              # Activate vendor specific regex
+
+        # Get offloader (on hybrid cards) and python executable
         if @hybridGraphics.enable
           executable = @hybridGraphics.offloadingPath
           args.push(@pythonPath)
         else
           executable = @pythonPath
+
+        # Get OpenCL compiler
         args.push(__dirname + '/clCompiler.py')
+        # File to lint
         args.push(filePath)
-        if @compilerFlags.localeCompare(' ') != 0
+        # Get flags used during compiling
+        flags = module.exports.getFlags()
+        if flags.localeCompare(' ') != 0
           args.push('-f')
-          args.push('\"' + @compilerFlags + '\"')
+          args.push('\"' + flags + '\"')
+        # Get platform to compile on
         args.push('-p')
         args.push(@openCL.platformIndex)
+
         if debug
+          # Print full command
           command   = executable
           for a in args
             command = command + ' ' + a
           console.log(command)
+
         return new Promise (resolve, reject) ->
           helpers.exec(executable, args, {stream: 'stderr'})
           .then (output) ->
             if debug
+              # Print full output of command
               console.log(output)
             lines         = output.split('\n')
             result        = []
+
+            # Define vendor specific regex
             if vendor.localeCompare('AMD') == 0
               regex       = /[^,], line (\d+): ([^:]+): (.*)/
-              #reges = /[^,], (.*)/
             else
               regex       = /[^:]:(\d+):(\d+): ([^:]+): (.*)/
 
             for line in lines
+              # Retrive lines with e.g. warnings and errors
               match       = line.match(regex)
               if match
                 console.log(line)

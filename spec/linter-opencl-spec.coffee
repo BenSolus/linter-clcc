@@ -5,7 +5,7 @@ describe 'The OpenCL build provider for Atom Linter',  ->
 
   beforeEach ->
     waitsForPromise ->
-      atom.config.set('linter-opencl.pythonPath', 'python3')
+      atom.config.set('linter-opencl.pythonPath', 'python')
       atom.config.set('linter-opencl.vendor', 'AMD')
       atom.config.set('linter-opencl.openCL.platformIndex', 0)
       # atom.config.set('linter-opencl.openCL.platformIndex', 1)
@@ -26,8 +26,7 @@ describe 'The OpenCL build provider for Atom Linter',  ->
 
   it 'find an catastrophic error in error.cl', ->
     waitsForPromise ->
-      filePath = '/home/travis/build/BenSolus/linter-opencl/spec/files/error.cl'
-      # filePath = '/home/bennet/Projects/linter-opencl/spec/files/error.cl'
+      filePath = __dirname + '/files/error.cl'
       expect(filePath).toExistOnDisk()
       return atom.workspace.open(filePath).then (editor) ->
         return linter(editor).then (messages) ->
@@ -38,9 +37,8 @@ describe 'The OpenCL build provider for Atom Linter',  ->
   it 'find errors and warnings in error.cl', ->
     waitsForPromise ->
       atom.config.set('linter-opencl.compilerFlags',
-                      '-I /home/bennet/Projects/linter-opencl/spec/files')
-      filePath = '/home/travis/build/BenSolus/linter-opencl/spec/files/error.cl'
-      # filePath = '/home/bennet/Projects/linter-opencl/spec/files/error.cl'
+                      '-I \'' + __dirname + '/spec/files\'')
+      filePath = __dirname + '/files/error.cl'
       expect(filePath).toExistOnDisk()
       return atom.workspace.open(filePath).then (editor) ->
         return linter(editor).then (messages) ->
@@ -54,9 +52,7 @@ describe 'The OpenCL build provider for Atom Linter',  ->
 
   it 'find no error in correct.cl', ->
     waitsForPromise ->
-      filePath = '/home/travis/build/BenSolus/linter-opencl/spec/files/' +
-                 'correct.cl'
-      # filePath = '/home/bennet/Projects/linter-opencl/spec/files/correct.cl'
+      filePath = __dirname + '/files/correct.cl'
       expect(filePath).toExistOnDisk()
       return atom.workspace.open(filePath).then (editor) ->
         return linter(editor).then (messages) ->
