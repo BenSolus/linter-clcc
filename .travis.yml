@@ -12,7 +12,7 @@ os:
 
 before_install:
     - sudo apt-get update -qq
-    - sudo apt-get install -qq opencl-headers python3
+    - sudo apt-get install -qq opencl-headers
     - bash .travis/amd_sdk.sh;
     - tar -xjf AMD-SDK.tar.bz2;
     - AMDAPPSDKROOT=${HOME}/AMDAPPSDK;
@@ -32,6 +32,3 @@ env:
 
   matrix:
     - ATOM_CHANNEL=stable
-
-before_script:
-    - pip install pyopencl
