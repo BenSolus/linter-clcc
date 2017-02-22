@@ -31,7 +31,8 @@
     "eslint-plugin-import": "^2.2.0"
   },
   "package-deps": [
-    "linter"
+    "linter",
+    "language-opencl"
   ],
   "scripts": {
     "lint": "eslint .",

@@ -1,12 +1,11 @@
-{CompositeDisposable} = require 'atom'
-helpers = require 'atom-linter'
-path = require 'path'
-fs = require 'fs'
-cl = require 'node-opencl'
+#{CompositeDisposable} = require 'atom'
+
+path    = null
+fs      = null
+helpers = null
+cl      = null
 
 configs = exports ? this
-
-configs.compilerFlags = -> ''
 
 'use babel'
 module.exports = {
@@ -20,15 +19,19 @@ module.exports = {
           title: 'OpenCL Vendor'
           type: 'string'
           order: 1
-          default: 'NVIDIA'
-          enum: ['NVIDIA', 'AMD']
+          default: 'NVIDIA/Intel Beignet'
+          enum: ['NVIDIA/Intel Beignet', 'AMD']
+          description: 'The vendor of the OpenCL implementation currently ' +
+          'used. Ensure that the vendor of the Platform with the index set ' +
+          'in ```OpenCL Platform Index``` matches with this vendor.'
         platformIndex:
           title: 'OpenCL Platform Index'
           type: 'integer'
           order: 2
           default: 0
-          description: 'Letting linter-opencl compile the source code ' +
-          'on the OpenCL Platform with the corresponding index.'
+          description: 'Lint the source code for the OpenCL Platform with ' +
+          'the corresponding index. Ensure that the vendor of this ' +
+          'Platform matches with ```OpenCL Vendor```.'
     hybridGraphics:
       title: 'Hybrid Graphics (Linux only)'
       type: 'object'
@@ -48,37 +51,40 @@ module.exports = {
           type: 'string'
           default: '/usr/bin/python'
           description: 'If the python binary is in your ```$PATH```, full ' +
-          'patho is not necessary. If the path contains space, it needs to be' +
+          'path is not necessary. If the path contains space, it needs to be' +
           'enclosed in double quotes.'
-    compilerFlags:
-      type: 'string'
-      order: 3
-      default: ''
-      description: 'Specifie additional flags for the OpenCL compiler'
     includePaths:
       type: 'array'
-      order: 4
+      order: 3
       default: ['']
       items:
         type: 'string'
+      description: 'Paths which contain source code which are included ' +
+      'by a linted source file.'
+    compilerFlags:
+      type: 'string'
+      order: 4
+      default: ''
+      description: 'Additional flags for the OpenCL compiler'
     debug:
       type: 'boolean'
       default: 'false'
       order: 5
-      description: 'Prints command executed to compile OpenCL source to ' +
-      'atoms  console. Go to View->Developer->Toggle Developer Tools. ' +
-      'Observe the Console tab when you open/save a OpenCL file.'
+      description: 'Prints build log to toms console. Go to ' +
+      'View->Developer->Toggle Developer Tools.'
 
   activate: ->
-    require('atom-package-deps').install('linter-opencl')
-
-    @subscriptions = new CompositeDisposable()
+    path ?= require 'path'
+    fs   ?= require 'fs'
 
     if !atom.packages.getLoadedPackages('linter')
       atom.notifications.addError(
         "Linter package not found.",
         { detail: 'Please install the `linter` package.' }
       )
+
+    require('atom-package-deps').install('linter-opencl')
+
     if atom.project.getPaths()[0] != undefined
       configFile = path.join(atom.project.getPaths()[0], '.opencl-config.json')
 
@@ -132,11 +138,9 @@ module.exports = {
     configs.compilerFlags = atom.config.get('linter-opencl.compilerFlags')
     configs.includePaths  = atom.config.get('linter-opencl.includePaths')
 
-  deactivate: ->
-    @subscriptions.dispose()
-
   provideLinter: ->
-    #return require './linter.coffee'
+    helpers ?= require 'atom-linter'
+    cl      ?= require 'node-opencl'
     provider =
       grammarScopes: ['source.opencl']
       scope: 'file'
@@ -149,18 +153,8 @@ module.exports = {
 
         if filePath && source != ''
 
-          buildLog = ''
+          options      = configs.compilerFlags
 
-          # Platform which where the source should be tested on
-          platform =  cl.getPlatformIDs()[configs.platformIndex]
-
-          devices  = cl.getDeviceIDs(platform, cl.DEVICE_TYPE_ALL)
-          context  = cl.createContext([cl.CONTEXT_PLATFORM, platform], devices)
-          program  = cl.createProgramWithSource(context, source)
-
-          options  = configs.compilerFlags
-
-          # Get include paths
           includePaths = configs.includePaths
 
           for i of includePaths
@@ -172,17 +166,36 @@ module.exports = {
               # Add include paths to compiler flags
               options += ' -I \"' + includePaths[i] + '\"'
 
-          if atom.config.get('linter-opencl.debug')
-            console.log('Using following compiler flags: ' + options)
+          buildLog = ''
 
-          # Try to compile the source
-          try
-            cl.buildProgram(program, devices)
-          catch error
-            # Get build log if compilation failed
-            buildLog = cl.getProgramBuildInfo(program, \
-                                              devices[0], \
-                                              cl.PROGRAM_BUILD_LOG)
+          if atom.config.get('linter-opencl.hybridGraphics.enable')
+            args = [
+              configs.pythonPath,
+              __dirname + '/clCompiler.py'
+              configs.platformIndex,
+              source,
+              options
+            ]
+
+            buildLog = helpers.exec(configs.offloadingPath,
+                                    args,
+                                    {stream: 'stderrr'})
+          else
+            platform =  cl.getPlatformIDs()[configs.platformIndex]
+
+            devices  = cl.getDeviceIDs(platform, cl.DEVICE_TYPE_ALL)
+            context  = cl.createContext([cl.CONTEXT_PLATFORM, platform],
+                                        devices)
+            program  = cl.createProgramWithSource(context, source)
+
+            # Try to compile the source
+            try
+              cl.buildProgram(program, devices)
+            catch error
+              # Get build log if compilation failed
+              buildLog =  cl.getProgramBuildInfo(program, \
+                                                devices[0], \
+                                                cl.PROGRAM_BUILD_LOG)
 
           lintMessages = []
 
@@ -226,6 +239,5 @@ module.exports = {
                   filePath: filePath
                 )
 
-          console.log(lintMessages.length)
           return lintMessages
 }

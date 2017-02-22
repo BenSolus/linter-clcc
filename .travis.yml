@@ -1,18 +1,19 @@
 notifications:
   email:
     on_success: never
-    on_failure: never
+    on_failure: change
+
+matrix:
+  include:
+    - os: linux
+      env: ATOM_CHANNEL=stable
+
+    - os: osx
+      env: ATOM_CHANNEL=stable
 
 script: 'curl -s https://raw.githubusercontent.com/atom/ci/master/build-package.sh | sh'
 
-sudo: required
-dist: trusty
-os:
-  - linux
-
 before_install:
-    - sudo apt-get update -qq
-    - sudo apt-get install -qq opencl-headers
     - bash .travis/amd_sdk.sh;
     - tar -xjf AMD-SDK.tar.bz2;
     - AMDAPPSDKROOT=${HOME}/AMDAPPSDK;
@@ -28,7 +29,22 @@ before_install:
 
 env:
   global:
-    - APM_TEST_PACKAGES="linter language-opencl"
+    - APM_TEST_PACKAGES="linter"
 
-  matrix:
-    - ATOM_CHANNEL=stable
+branches:
+  only:
+    - master
+
+git:
+  depth: 10
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+    - build-essential
+    - git
+    - libgnome-keyring-dev
+    - fakeroot
+    - opencl-headers
