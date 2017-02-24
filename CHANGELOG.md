@@ -10,3 +10,7 @@
 
 ## 0.2.0
 *   Adding global support for compiler flags
+
+## 1.0.0
+*   Replaced PyOpenCL with node-opencl as main OpenCL interface
+*   Support for project-specific settings

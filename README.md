@@ -40,8 +40,8 @@ You can specify your settings in ```.opencl-flags.json``` with the following
 syntax:
 
     {
-      "flags": "-cl-mad-enable -cl-fast-relaxed-math",
-      "includes": [".", "/opt/include"]
+      "compilerFlags": "-cl-mad-enable -cl-fast-relaxed-math",
+      "includePaths": [".", "/opt/include"]
     }
 
 Include paths are listed in an array. Relative paths

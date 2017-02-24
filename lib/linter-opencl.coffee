@@ -5,54 +5,39 @@ fs      = null
 helpers = null
 cl      = null
 
-configs = exports ? this
+configs = null
 
 'use babel'
 module.exports = {
   config:
     openCL:
-      title: 'OpenCL'
+      title: 'OpenCL Platform'
       type: 'object'
       order: 1
       properties:
-        vendor:
-          title: 'OpenCL Vendor'
-          type: 'string'
-          order: 1
-          default: 'NVIDIA/Intel Beignet'
-          enum: ['NVIDIA/Intel Beignet', 'AMD']
-          description: 'The vendor of the OpenCL implementation currently ' +
-          'used. Ensure that the vendor of the Platform with the index set ' +
-          'in ```OpenCL Platform Index``` matches with this vendor.'
         platformIndex:
-          title: 'OpenCL Platform Index'
-          type: 'integer'
-          order: 2
-          default: 0
+          title:       'Platform Index'
+          type:        'integer'
+          order:       1
+          default:     0
           description: 'Lint the source code for the OpenCL Platform with ' +
-          'the corresponding index. Ensure that the vendor of this ' +
-          'Platform matches with ```OpenCL Vendor```.'
-    hybridGraphics:
-      title: 'Hybrid Graphics (Linux only)'
-      type: 'object'
-      order: 2
-      properties:
-        enable:
-          type: 'boolean'
-          default: false
-        offloadingPath:
-          type: 'string'
-          default: '/usr/bin/optirun'
-          description: 'If the offloader is in your ```$PATH```, full path ' +
-          'to the binary is not necessary. If your path contains spaces, it ' +
-          ' needs to be enclosed in double quotes.'
-        pythonPath:
-          title: 'Python Path'
-          type: 'string'
-          default: '/usr/bin/python'
-          description: 'If the python binary is in your ```$PATH```, full ' +
-          'path is not necessary. If the path contains space, it needs to be' +
-          'enclosed in double quotes.'
+          'the corresponding index. Only change this value if you want to ' +
+          'change the OpenCL Platform.'
+        platformVersion:
+          title:   'Platform Version'
+          type:    'string'
+          order:   2
+          default: ''
+        platformName:
+          title:   'Platform Name'
+          type:    'string'
+          order:   3
+          default: ''
+        platformVendor:
+          title:   'Platform Vendor'
+          type:    'string'
+          order:   4
+          default: ''
     includePaths:
       type: 'array'
       order: 3
@@ -74,71 +59,40 @@ module.exports = {
       'View->Developer->Toggle Developer Tools.'
 
   activate: ->
-    path ?= require 'path'
-    fs   ?= require 'fs'
-
-    if !atom.packages.getLoadedPackages('linter')
-      atom.notifications.addError(
-        "Linter package not found.",
-        { detail: 'Please install the `linter` package.' }
-      )
-
     require('atom-package-deps').install('linter-opencl')
 
-    if atom.project.getPaths()[0] != undefined
-      configFile = path.join(atom.project.getPaths()[0], '.opencl-config.json')
+    atom.config.observe 'linter-opencl.openCL.platformIndex', (platformIndex) ->
+      cl ?= require 'node-opencl'
 
-      if fs.existsSync(configFile)
-        delete require.cache[configFile]
+      try
+        platform = cl.getPlatformIDs()[platformIndex]
 
-        configData = require(configFile)
+        atom.config.set('linter-opencl.openCL.platformVersion',
+                        cl.getPlatformInfo(platform, cl.PLATFORM_VERSION))
+        atom.config.set('linter-opencl.openCL.platformName',
+                        cl.getPlatformInfo(platform, cl.PLATFORM_NAME))
+        atom.config.set('linter-opencl.openCL.platformVendor',
+                        cl.getPlatformInfo(platform, cl.PLATFORM_VENDOR))
+      catch
+        atom.config.set('linter-opencl.openCL.platformVersion', '')
+        atom.config.set('linter-opencl.openCL.platformName', '')
+        atom.config.set('linter-opencl.openCL.platformVendor', '')
 
-        if configData.vendor != undefined
-          configs.vendor        = configData.vendor
-        else
-          configs.vendor        = atom.config.get('linter-opencl.openCL.vendor')
+    atom.commands.add(
+      'atom-workspace',
+      'linter-opencl:Set Platform',
+      ->
+        if !this.platformListView
+          PlatformListView = require './ui.coffee'
 
-        if configData.platformIndex != undefined
-          configs.platformIndex = configData.platformIndex
-        else
-          configs.platformIndex = \
-            atom.config.get('linter-opencl.openCL.platformIndex')
+          platformListView = new PlatformListView()
 
-        if configData.offloadingPath != undefined
-          configs.offloadingPath = configData.offloadingPath
-        else
-          configs.offloadingPath = \
-            atom.config.get('linter-opencl.hybridGraphics.offloadingPath')
-
-        if configData.pythonPath != undefined
-          configs.pythonPath = configData.pythonPath
-        else
-          configs.pythonPath = \
-            atom.config.get('linter-opencl.hybridGraphics.pythonPath')
-
-        if configData.compilerFlags != undefined
-          configs.compilerFlags = configData.compilerFlags
-        else
-          configs.compilerFlags = atom.config.get('linter-opencl.compilerFlags')
-
-        if configData.includePaths != undefined
-          configs.includePaths  = configData.includePaths
-        else
-          configs.includePaths  = atom.config.get('linter-opencl.includePaths')
-
-        return
-
-    configs.vendor        = atom.config.get('linter-opencl.openCL.vendor')
-    configs.platformIndex = \
-      atom.config.get('linter-opencl.openCL.platformIndex')
-    configs.offloadingPath = \
-      atom.config.get('linter-opencl.hybridGraphics.offloadingPath')
-    configs.pythonPath = \
-      atom.config.get('linter-opencl.hybridGraphics.pythonPath')
-    configs.compilerFlags = atom.config.get('linter-opencl.compilerFlags')
-    configs.includePaths  = atom.config.get('linter-opencl.includePaths')
+        platformListView.toggle()
+    )
 
   provideLinter: ->
+    path    ?= require 'path'
+    fs      ?= require 'fs'
     helpers ?= require 'atom-linter'
     cl      ?= require 'node-opencl'
     provider =
@@ -148,6 +102,8 @@ module.exports = {
       # coffeelint: disable=no_unnecessary_fat_arrows
       lint: (textEditor) =>
         # coffeelint: enable=no_unnecessary_fat_arrows
+        configs ?= require('./config.coffee')()
+        console.log(configs.compilerFlags)
         filePath = textEditor.getPath()
         source   = textEditor.getText()
 
@@ -168,45 +124,37 @@ module.exports = {
 
           buildLog = ''
 
-          if atom.config.get('linter-opencl.hybridGraphics.enable')
-            args = [
-              configs.pythonPath,
-              __dirname + '/clCompiler.py'
-              configs.platformIndex,
-              source,
-              options
-            ]
+          platformIndex = atom.config.get('linter-opencl.openCL.platformIndex')
+          try
+            platform = cl.getPlatformIDs()[platformIndex]
+          catch
+            conosle.log('TRERS')
+            return
 
-            buildLog = helpers.exec(configs.offloadingPath,
-                                    args,
-                                    {stream: 'stderrr'})
-          else
-            platform =  cl.getPlatformIDs()[configs.platformIndex]
-
-            devices  = cl.getDeviceIDs(platform, cl.DEVICE_TYPE_ALL)
-            context  = cl.createContext([cl.CONTEXT_PLATFORM, platform],
+          devices  = cl.getDeviceIDs(platform, cl.DEVICE_TYPE_ALL)
+          context  = cl.createContext([cl.CONTEXT_PLATFORM, platform],
                                         devices)
-            program  = cl.createProgramWithSource(context, source)
+          program  = cl.createProgramWithSource(context, source)
 
-            # Try to compile the source
-            try
-              cl.buildProgram(program, devices)
-            catch error
-              # Get build log if compilation failed
-              buildLog =  cl.getProgramBuildInfo(program, \
-                                                devices[0], \
-                                                cl.PROGRAM_BUILD_LOG)
+          # Try to compile the source
+          try
+            cl.buildProgram(program, devices)
+          catch error
+            # Get build log if compilation failed
+            buildLog =  cl.getProgramBuildInfo(program, \
+                                               devices[0], \
+                                               cl.PROGRAM_BUILD_LOG)
 
           lintMessages = []
 
-          if buildLog != ''
+          if (buildLog != '')
             if atom.config.get('linter-opencl.debug')
               console.log('Received following build log:')
               console.log(buildLog)
 
-            vendor = configs.vendor
+            oCLVersion = atom.config.get('linter-opencl.openCL.platformVersion')
 
-            if vendor.localeCompare('AMD') == 0
+            if oCLVersion.includes("AMD")
               regex = /[^,], line (\d+): ([^:]+): (.*)/
             else
               regex  = /[^:]:(\d+):(\d+): ([^:]+): (.*)/
@@ -218,7 +166,7 @@ module.exports = {
 
               if match
                 row       = match[1] - 1
-                if vendor.localeCompare('AMD') == 0
+                if oCLVersion.includes("AMD")
                   col     = 0
                   if match[2].localeCompare('catastrophic error') == 0
                     type  = 'error'
@@ -238,6 +186,6 @@ module.exports = {
                   range:    [[row,col], [row,col]]
                   filePath: filePath
                 )
-
+          console.log(lintMessages.length)
           return lintMessages
 }

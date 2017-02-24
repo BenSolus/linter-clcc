@@ -7,17 +7,11 @@ describe 'The OpenCL build provider for Atom Linter',  ->
 
   beforeEach ->
     waitsForPromise ->
-      atom.config.set('linter-opencl.pythonPath', 'python')
-      atom.config.set('linter-opencl.openCL.vendor', 'AMD')
       atom.config.set('linter-opencl.openCL.platformIndex', 0)
       # atom.config.set('linter-opencl.openCL.platformIndex', 1)
-      atom.config.set('linter-opencl.hybridGraphics.enable', false)
-      atom.config.set('linter-opencl.hybridGraphics.offloadingPath',
-                      '/usr/bin/optirun')
       atom.config.set('linter-opencl.debug', true)
       atom.packages.activatePackage('language-opencl')
       atom.packages.activatePackage('linter-opencl')
-      console.log(atom.packages.resolvePackagePath('linter-opencl'))
       return atom.packages.activatePackage("linter-opencl")
 
   it 'should be in the packages list', ->

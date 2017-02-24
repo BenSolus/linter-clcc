@@ -24,8 +24,6 @@ before_install:
     - echo libamdocl64.so > ${OPENCL_VENDOR_PATH}/amdocl64.icd;
     - export LD_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64:${LD_LIBRARY_PATH};
     - export CMAKE_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64;
-    - chmod +x ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
-    - ${AMDAPPSDKROOT}/bin/x86_64/clinfo;
     - export LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64:${LIBRARY_PATH};
 
 env:
