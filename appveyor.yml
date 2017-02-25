@@ -3,7 +3,9 @@ environment:
   APM_TEST_PACKAGES:
   ATOM_LINT_WITH_BUNDLED_NODE: "true"
 
-nodejs_version: "4"
+environment:
+  matrix:
+    nodejs_version: "4"
 
 matrix:
   - ATOM_CHANNEL: stable

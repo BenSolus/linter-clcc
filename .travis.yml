@@ -9,9 +9,8 @@ matrix:
       env: ATOM_CHANNEL=stable
 
     - os: osx
+      osx_image: xcode8.2
       env: ATOM_CHANNEL=stable
-
-osx_image: xcode8.2
 
 script:
   - curl -s -O https://raw.githubusercontent.com/atom/ci/master/build-package.sh
