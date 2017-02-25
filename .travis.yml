@@ -1,6 +1,6 @@
 language: generic
 
-matrix:p
+matrix:
   include:
     - os: linux
       dist: trusty
