@@ -103,7 +103,7 @@ module.exports = {
       lint: (textEditor) =>
         # coffeelint: enable=no_unnecessary_fat_arrows
         configs ?= require('./config.coffee')()
-        console.log(configs.compilerFlags)
+
         filePath = textEditor.getPath()
         source   = textEditor.getText()
 
@@ -186,6 +186,6 @@ module.exports = {
                   range:    [[row,col], [row,col]]
                   filePath: filePath
                 )
-          console.log(lintMessages.length)
+
           return lintMessages
 }

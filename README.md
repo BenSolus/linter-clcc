@@ -2,41 +2,38 @@
 
 # linter-opencl package
 
-Linter plugin for [Linter](https://github.com/AtomLinter/Linter), provides an interface to the build functionality of OpenCL.
+Linter plugin for [Linter](https://github.com/AtomLinter/Linter), provides an interface to the build functionality of OpenCL through
+[node-opencl](https://github.com/mikeseven/node-opencl).
+
+![linter-opencl gif](https://raw.githubusercontent.com/BenSolus/linter-opencl/master/linter-opencl.gif)
 
 ## Important info for user of hybrid graphics!
 
-On systems with hybrid graphics, OpenCL will compile and lint for the integrated graphics card by default. While Windows users just need to set the platform index of the desired platform, Linux users who wants to use the dedicated graphics card need to enable the '''hybridGraphics''' option and provide the path to a GPU offloader like '''optirun''' to enable linting for those devices.
+On systems with hybrid graphics, OpenCL will compile and lint for the
+integrated graphics card by default. While Windows users just need to set the
+platform index of the desired platform, Linux users who wants to use the
+dedicated graphics card need to run atom through a GPU offloader like
+```optirun```, e.g.
+
+      $ optirun atom
+
+and setting the platform index accordingly.
 
 ## Installation
 
-1.  Install an OpenCL implementation for your device
-2.  Install [Python](https://www.python.org) and
-    [PyOpenCL](https://mathema.tician.de/software/pyopencl/)
-3.  Install [linter](https://github.com/steelbrain/linter),
-    [language-opencl](https://github.com/podgib/atom-opencl) and
-    [linter-opencl](https://github.com/BenSolus/linter-opencl)
-4.  (Configure the path to Python and set OpenCL Vendor and Platfrom Index in
+1.  Install an OpenCL implementation for your device.
+3.  Install [linter-opencl](https://github.com/BenSolus/linter-opencl) either
+    through the settings window by searching and installing this package or
+    through your command line by running
+      apm install linter-opencl
+4.  (Configure the OpenCL Platfrom, include paths and additional compiler flags
     preferences.)
-5.  Go linting!
+5.  Restart Atom
 
-<!-- ## (Sub-)Project-Specific compiler flags
+## Project-Specific settings
 
-Assuming you have a file ```... /projectRoot/some/directories/foo.cl``` open in
-your editor, linter-opencl searches for compiler flags the following way:
-
-1.  Looking for ```.opencl-flags.json``` in the same directory as your source
-    file (```... /projectRoot/some/directories.opencl-flags.json```).
-2.  Recursively looking for ```.opencl-flags.json``` in every subdirectory down
-    to your project root directory
-    (down to ```... /projectRoot/.opencl-flags.json```).
-3.  If no ```.opencl-flags.json``` was found, linter-opencl uses the compiler
-    flags defined in your package settings.
-
-Linter-opencl uses the flags from the first file it finds and replaces it with
-the flags defined in your package settings.
-
-You can specify your settings in ```.opencl-flags.json``` with the following
+When activating this package, it searches for a file called
+```.opencl-flags.json``` in the project root directory using the following
 syntax:
 
     {
@@ -44,13 +41,6 @@ syntax:
       "includePaths": [".", "/opt/include"]
     }
 
-Include paths are listed in an array. Relative paths
-(starting with ```.``` or```..```) are expanded relative to the
-***project root*** directory. -->
-
-## Afterword
-OpenCL is a complex beast. There are lots of different settings provided for
-building kernels on devices and the format of the log differs depending on the
-vendor which provides OpenCL. Due to this fact and my limited resources (of
-testing devices) there will be uncatched cases and issues so feedback will be
-appreciated.
+If this file is present, it will replace the settings you specified in the
+settings window. Relative paths (starting with ```.``` or ```..```) are
+expanded with respect to the root folder.
