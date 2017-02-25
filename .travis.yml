@@ -1,4 +1,3 @@
-### Project specific config ###
 language: generic
 
 matrix:
@@ -10,29 +9,30 @@ matrix:
     - os: osx
       env: ATOM_CHANNEL=stable
 
-### Generic setup follows ###
 script: 'curl -s https://raw.githubusercontent.com/atom/ci/master/build-package.sh | sh'
 
-# before_install:
-#     - bash .travis/amd_sdk.sh;
-#     - tar -xjf AMD-SDK.tar.bz2;
-#     - AMDAPPSDKROOT=${HOME}/AMDAPPSDK;
-#     - export OPENCL_VENDOR_PATH=${AMDAPPSDKROOT}/etc/OpenCL/vendors;
-#     - mkdir -p ${OPENCL_VENDOR_PATH};
-#     - sh AMD-APP-SDK*.sh --tar -xf -C ${AMDAPPSDKROOT};
-#     - echo libamdocl64.so > ${OPENCL_VENDOR_PATH}/amdocl64.icd;
-#     - export LD_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64:${LD_LIBRARY_PATH};
-#     - export CMAKE_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64;
-#     - export LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64:${LIBRARY_PATH};
+before_install:
+    - if [ $TRAVIS_OS_NAME = "linux" ]; then
+        bash .travis/amd_sdk.sh;
+        tar -xjf AMD-SDK.tar.bz2;
+        AMDAPPSDKROOT=${HOME}/AMDAPPSDK;
+        export OPENCL_VENDOR_PATH=${AMDAPPSDKROOT}/etc/OpenCL/vendors;
+        mkdir -p ${OPENCL_VENDOR_PATH};
+        sh AMD-APP-SDK*.sh --tar -xf -C ${AMDAPPSDKROOT};
+        echo libamdocl64.so > ${OPENCL_VENDOR_PATH}/amdocl64.icd;
+        export LD_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64:${LD_LIBRARY_PATH};
+        export CMAKE_LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64;
+        export LIBRARY_PATH=${AMDAPPSDKROOT}/lib/x86_64:${LIBRARY_PATH};
+      fi;
 
 notifications:
   email:
     on_success: never
     on_failure: change
 
-env:
-  global:
-    - APM_TEST_PACKAGES="linter"
+# env:
+#   global:
+#     - APM_TEST_PACKAGES="linter"
 
 branches:
   only:
@@ -51,4 +51,3 @@ addons:
     - libgnome-keyring-dev
     - fakeroot
     - opencl-headers
-    - pocl
