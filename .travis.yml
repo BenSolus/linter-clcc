@@ -1,7 +1,6 @@
 language: generic
 
-node_js:
-  - "0.12"
+node_js: "4"
 
 matrix:
   include:
@@ -11,6 +10,8 @@ matrix:
 
     - os: osx
       env: ATOM_CHANNEL=stable
+
+osx_image: xcode8.2
 
 script:
   - curl -s -O https://raw.githubusercontent.com/atom/ci/master/build-package.sh
