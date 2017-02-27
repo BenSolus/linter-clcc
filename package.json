@@ -1,7 +1,7 @@
 {
   "name": "linter-opencl",
   "main": "./lib/linter-opencl",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Linter plugin for OpenCl.",
   "keywords": [
     "lint",
