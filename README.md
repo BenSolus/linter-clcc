@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/BenSolus/linter-opencl.svg?branch=master)](https://travis-ci.org/BenSolus/linter-opencl)
+[![Travis.ci Shield](https://img.shields.io/travis/BenSolus/linter-opencl/master.svg?style=plastic&label=Linux)](https://travis-ci.org/BenSolus/linter-opencl)
 
 # linter-opencl package
 
