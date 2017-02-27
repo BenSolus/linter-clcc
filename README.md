@@ -33,7 +33,7 @@ and setting the platform index accordingly.
 ## Project-Specific settings
 
 When activating this package, it searches for a file called
-```.opencl-flags.json``` in the project root directory using the following
+```.opencl-config.json``` in the project root directory using the following
 syntax:
 
     {

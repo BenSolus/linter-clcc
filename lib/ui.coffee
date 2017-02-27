@@ -3,7 +3,7 @@
 cl = null
 
 module.exports =
-  class platformListView extends SelectListView
+  class PlatformListView extends SelectListView
     viewForItem: (item) ->
       $$ -> @li(item)
 
@@ -19,7 +19,7 @@ module.exports =
       super
       @addClass('overlay from-top')
       @setItems(platforms)
-      @panel ?= atom.workspace.addModalPanel({ item: this });
+      @panel ?= atom.workspace.addModalPanel({ item: this })
       @panel.show()
       @focusFilterEditor()
 

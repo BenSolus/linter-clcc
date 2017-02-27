@@ -14,3 +14,7 @@
 ## 1.0.0
 *   Replaced PyOpenCL with node-opencl as main OpenCL interface
 *   Support for project-specific settings
+
+## 1.0.1
+*   Typo in README: It should read '.opencl-config.json' instead of 
+    '.opencl-flags.json'
