@@ -16,5 +16,8 @@
 *   Support for project-specific settings
 
 ## 1.0.1
-*   Typo in README: It should read '.opencl-config.json' instead of 
+*   Typo in README: It should read '.opencl-config.json' instead of
     '.opencl-flags.json'
+
+## 1.0.2
+*   Fixed error of compiler flags in .opencl-config.json not getting parsed

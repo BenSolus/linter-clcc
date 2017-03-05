@@ -128,7 +128,6 @@ module.exports = {
           try
             platform = cl.getPlatformIDs()[platformIndex]
           catch
-            conosle.log('TRERS')
             return
 
           devices  = cl.getDeviceIDs(platform, cl.DEVICE_TYPE_ALL)
@@ -138,7 +137,7 @@ module.exports = {
 
           # Try to compile the source
           try
-            cl.buildProgram(program, devices)
+            cl.buildProgram(program, devices, options)
           catch error
             # Get build log if compilation failed
             buildLog =  cl.getProgramBuildInfo(program, \
