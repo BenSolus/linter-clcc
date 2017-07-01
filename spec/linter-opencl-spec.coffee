@@ -28,7 +28,7 @@ describe 'The OpenCL build provider for Atom Linter',  ->
 
   beforeEach ->
     waitsForPromise ->
-      atom.config.set('linter-opencl.openCL.platformIndex', 1)
+      atom.config.set('linter-opencl.openCL.platformIndex', 0)
       # atom.config.set('linter-opencl.openCL.platformIndex', 1)
       atom.config.set('linter-opencl.debug', true)
       atom.packages.activatePackage('language-opencl')
