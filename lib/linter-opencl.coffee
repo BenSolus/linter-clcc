@@ -1,4 +1,23 @@
-#{CompositeDisposable} = require 'atom'
+# Copyright (c) 2016-2017 Bennet Carstensen
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 path    = null
 fs      = null
@@ -96,9 +115,10 @@ module.exports = {
     helpers ?= require 'atom-linter'
     cl      ?= require 'node-opencl'
     provider =
+      name: 'opencl'
       grammarScopes: ['source.opencl']
       scope: 'file'
-      lintOnFly: true,
+      lintsOnChange: true
       # coffeelint: disable=no_unnecessary_fat_arrows
       lint: (textEditor) =>
         # coffeelint: enable=no_unnecessary_fat_arrows
@@ -164,26 +184,28 @@ module.exports = {
               match = line.match(regex)
 
               if match
-                row       = match[1] - 1
+                row = match[1] - 1
                 if oCLVersion.includes("AMD")
-                  col     = 0
+                  col = 0
                   if match[2].localeCompare('catastrophic error') == 0
-                    type  = 'error'
+                    severity = 'error'
                   else
-                    type    = match[2]
+                    severity = match[2]
                   message = match[3]
                 else
-                  col     = match[2] - 1
+                  col = match[2] - 1
                   if match[3].localeCompare('fatal error') == 0
-                    type  = 'error'
+                    severity = 'error'
                   else
-                    type  = match[3]
+                    severity = match[3]
                   message = match[4]
                 lintMessages.push(
-                  type: type
-                  text: message
-                  range:    [[row,col], [row,col]]
-                  filePath: filePath
+                  severity:   severity
+                  location: {
+                    file:     filePath,
+                    position: [[row,col], [row,col]],
+                  },
+                  excerpt:    message
                 )
 
           return lintMessages
